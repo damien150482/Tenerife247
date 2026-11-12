@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenerife 24/7 - Répertoire Officiel de l'Île</title>
+    <style>
+        :root {
+            --primary-color: #0b192c;
+            --secondary-color: #ff9f1a;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --badge-bg: #e1f5fe;
+            --badge-text: #01579b;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 50px;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .admin-bar {
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .contact-banner {
+            background-color: var(--secondary-color);
+            color: #000;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        /* Barre de recherche globale */
+        .search-container {
+            padding: 12px 15px;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 15px;
+            font-size: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #0284c7;
+        }
+        .filters {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 15px;
+            background: white;
+            gap: 8px;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .filter-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: #0284c7;
+            color: white;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        .category-section {
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .category-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 18px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .category-header:hover {
+            background: #132742;
+        }
+        .category-content {
+            display: none; /* Fermé par défaut */
+            padding: 15px;
+            background: #fafafa;
+        }
+        .category-content.open {
+            display: block;
+        }
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+        }
+        .card-img {
+            height: 130px;
+            width: 100%;
+            object-fit: cover;
+            background: #cbd5e1;
+        }
+        .card-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .zone-badge {
+            align-self: flex-start;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .card-details {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 10px;
+            flex-grow: 1;
+        }
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            text-align: center;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            white-space: nowrap;
+        }
+        .btn-gps { background-color: #0284c7; color: white; }
+        .btn-call { background-color: #10b981; color: white; }
+        .btn-web { background-color: #6366f1; color: white; }
+
+        /* Pagination style */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .page-btn {
+            background: #0b192c;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .page-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+        .page-info {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="admin-banner" class="admin-bar" style="display:none;">
+        ⚡ Mode Administrateur Actif (Tenerife 24/7)
+    </div>
+
+    <header>
+        <h1 style="margin:0; font-size: 20px;">Tenerife 24h/24 & 7j/7</h1>
+        <p style="margin:5px 0 0; font-size:13px; opacity:0.85;">Répertoire Officiel & Solutions Multirisques</p>
+    </header>
+
+    <div class="contact-banner">
+        📞 Contact Admin / Partenaires : +33 6 15 32 72 87
+    </div>
+
+    <!-- Barre de recherche globale -->
+    <div class="search-container">
+        <input type="text" id="globalSearch" class="search-input" placeholder="🔍 Rechercher un hôtel, restaurant, discothèque, activité..." oninput="handleSearch()">
+    </div>
+
+    <!-- Filtres géographiques -->
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterZone('all', this)">Toutes les Zones</button>
+        <button class="filter-btn" onclick="filterZone('sud', this)">Sud (Adeje, Arona, Médano)</button>
+        <button class="filter-btn" onclick="filterZone('nord', this)">Nord (Puerto, Orotava)</button>
+        <button class="filter-btn" onclick="filterZone('metropole', this)">Métropole (Santa Cruz)</button>
+        <button class="filter-btn" onclick="filterZone('ouest', this)">Ouest (Los Gigantes, Teide)</button>
+    </div>
+
+    <div class="container" id="directory-container">
+        <!-- Généré dynamiquement -->
+    </div>
+
+    <footer>
+        &copy; 2026 Tenerife 24/7 - Contact : damien19821@outlook.fr
+    </footer>
+
+    <script>
+        // Base de données riche et paginée (6 éléments par page par catégorie)
+        const database = {
+            "hebergements": {
+                title: "1. Hébergements, Hôtels & Vanlife",
+                items: [
+                    { name: "Hotel Playa Sur Tenerife", zone: "sud", desc: "El Médano - Kitesurf & bord de mer", phone: "+34 922 17 60 20", web: "https://www.hoteldelaplaysur.com", gps: "https://maps.google.com/?q=Hotel+Playa+Sur+Tenerife", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Hotel Botanico & Spa", zone: "nord", desc: "Puerto de la Cruz - Luxe tropical", phone: "+34 922 38 14 00", web: "https://hotelbotanico.com", gps: "https://maps.google.com/?q=Hotel+Botanico+Puerto+de+la+Cruz", img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Camping Nauta Vanlife", zone: "sud", desc: "Las Chafiras - Emplacements & services", phone: "+34 922 64 33 00", web: "https://campingnauta.com", gps: "https://maps.google.com/?q=Camping+Nauta+Tenerife", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Parador de Las Cañadas", zone: "ouest", desc: "Au pied du Teide - Vue volcanique", phone: "+34 922 37 48 41", web: "https://parador.es", gps: "https://maps.google.com/?q=Parador+de+Las+Canadas+del+Teide", img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Urban Anaga Hotel", zone: "metropole", desc: "Santa Cruz - Design urbain", phone: "+34 922 29 46 00", web: "https://urbananagahotel.com", gps: "https://maps.google.com/?q=Urban+Anaga+Hotel+Santa+Cruz", img: "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Los Dragos del Sur", zone: "ouest", desc: "Puerto de Santiago - Vue falaises", phone: "+34 922 86 11 00", web: "https://dragosdelsur.com", gps: "https://maps.google.com/?q=Los+Dragos+del+Sur+Puerto+de+Santiago", img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Hotel Meliá Hacienda del Sol", zone: "sud", desc: "Alcalá - Resort 5 étoiles", phone: "+34 922 86 30 00", web: "https://melia.com", gps: "https://maps.google.com/?q=Melia+Hacienda+del+Sol", img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Iberostar Heritage Grand Mencey", zone: "metropole", desc: "Santa Cruz - Prestigieux hôtel historique", phone: "+34 922 60 99 00", web: "https://iberostar.com", gps: "https://maps.google.com/?q=Grand+Mencey+Santa+Cruz", img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&auto=format&fit=crop&q=60" }
+                ]
+            },
+            "restaurants": {
+                title: "2. Restaurants, Guachinches, Bars & Discothèques",
+                items: [
+                    { name: "Guachinche El Cordero", zone: "sud", desc: "Chayofa - Grillades authentiques", phone: "+34 922 16 02 14", web: "https://elcordero.es", gps: "https://maps.google.com/?q=Guachinche+El+Cordero+Chayofa", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Guachinche Casa Yayi", zone: "nord", desc: "La Orotava - Cuisine familiale", phone: "+34 633 11 22 33", web: "https://casayayi.com", gps: "https://maps.google.com/?q=Guachinche+Casa+Yayi+La+Orotava", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Papagayo Beach Club", zone: "sud", desc: "Playa de las Américas - Bar & Discothèque branchée", phone: "+34 922 79 36 90", web: "https://papagayobeachclub.com", gps: "https://maps.google.com/?q=Papagayo+Beach+Club+Tenerife", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Achaman Discoteca Pub", zone: "sud", desc: "Costa Adeje - Soirées latines, Salsa & Bachata", phone: "+34 650 30 20 10", web: "https://achamantenerife.com", gps: "https://maps.google.com/?q=Achaman+Costa+Adeje", img: "https://images.unsplash.com/photo-1545128485-c400e7702796?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Restaurante Los Roques", zone: "ouest", desc: "Los Abrigos - Poissons frais", phone: "+34 922 17 46 73", web: "https://losroques.es", gps: "https://maps.google.com/?q=Restaurante+Los+Roques+Los+Abrigos", img: "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Guachinche La Cueva de Gáldar", zone: "nord", desc: "Tacoronte - Vins locaux et plats traditionnels", phone: "+34 922 56 12 33", web: "https://lacuevagaldar.com", gps: "https://maps.google.com/?q=Tacoronte+Tenerife", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=60" },
+                    { name: "CC Tramps (The King of Clubs)", zone: "sud", desc: "Playas de Las Américas - Boîte de nuit incontournable", phone: "+34 922 79 00 22", web: "https://trampskingofclubs.com", gps: "https://maps.google.com/?q=Tramps+Tenerife", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&auto=format&fit=crop&q=60" }
+                ]
+            },
+            "plages": {
+                title: "3. Plages, Nautisme & Sorties en Mer",
+                items: [
+                    { name: "Puerto Colón (Excursions Bateau)", zone: "sud", desc: "Costa Adeje - Cétacés & catamarans", phone: "+34 922 71 52 42", web: "https://puertocolon.com", gps: "https://maps.google.com/?q=Puerto+Colon+Costa+Adeje", img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Playa de La Tejita", zone: "sud", desc: "El Médano - Spot windsurf sauvage", phone: "Accès libre", web: "#", gps: "https://maps.google.com/?q=Playa+de+La+Tejita", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Playa de Las Teresitas", zone: "metropole", desc: "San Andrés - Plage de sable doré", phone: "Accès libre", web: "#", gps: "https://maps.google.com/?q=Playa+de+Las+Teresitas", img: "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Teno Sub Diving", zone: "ouest", desc: "Garachico - Plongée sous-marine", phone: "+34 922 83 01 99", web: "https://tenosub.com", gps: "https://maps.google.com/?q=Garachico+Tenerife", img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Royal Delfín (Catamaran)", zone: "sud", desc: "Puerto Colón - Vision sous-marine", phone: "+34 922 78 88 11", web: "https://royaldelfin.com", gps: "https://maps.google.com/?q=Puerto+Colon+Tenerife", img: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&auto=format&fit=crop&q=60" }
+                ]
+            },
+            "excursions": {
+                title: "4. Excursions, Teide & Loisirs",
+                items: [
+                    { name: "Téléphérique du Teide", zone: "ouest", desc: "Parc National - Le toit de l'Espagne", phone: "+34 922 01 04 40", web: "https://volcanoteide.com", gps: "https://maps.google.com/?q=Teleferico+del+Teide", img: "https://images.unsplash.com/photo-1608270125807-4402654d2417?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Siam Park (Parc Aquatique)", zone: "sud", desc: "Adeje - Meilleur parc au monde", phone: "+34 922 78 88 88", web: "https://siampark.net", gps: "https://maps.google.com/?q=Siam+Park+Adeje", img: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Loro Parque", zone: "nord", desc: "Puerto de la Cruz - Zoo d'exception", phone: "+34 922 37 38 41", web: "https://loroparque.com", gps: "https://maps.google.com/?q=Loro+Parque+Puerto+de+la+Cruz", img: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Quad Adventures Tenerife", zone: "sud", desc: "Arona - Randonnées quads & buggy", phone: "+34 622 10 33 44", web: "https://quadtenerife.com", gps: "https://maps.google.com/?q=Arona+Tenerife", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&auto=format&fit=crop&q=60" }
+                ]
+            },
+            "bienetre": {
+                title: "5. Bien-être, Spas & Sport",
+                items: [
+                    { name: "Aqua Club Thermal", zone: "sud", desc: "Torviscas Alto - Circuit thermal & soins", phone: "+34 922 71 27 67", web: "https://aquaclubthermal.com", gps: "https://maps.google.com/?q=Aqua+Club+Thermal+Adeje", img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Santuario Spa Botanico", zone: "nord", desc: "Puerto de la Cruz - Relaxation holistique", phone: "+34 922 38 14 00", web: "https://hotelbotanico.com", gps: "https://maps.google.com/?q=Hotel+Botanico+Spa", img: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Tenerife Top Training (TTT)", zone: "sud", desc: "La Caleta - Centre sportif olympique", phone: "+34 922 78 27 55", web: "https://top-training.es", gps: "https://maps.google.com/?q=Tenerife+Top+Training", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop&q=60" }
+                ]
+            },
+            "garages": {
+                title: "6. Garages, Vanlife & Services Pratiques",
+                items: [
+                    { name: "Taller Mecánico Las Chafiras", zone: "sud", desc: "San Miguel - Réparation & camping-cars", phone: "+34 922 65 00 11", web: "https://tallereslaschafiras.com", gps: "https://maps.google.com/?q=Taller+Mecanico+Las+Chafiras", img: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Aire Camping-Car Granadilla", zone: "sud", desc: "Services eau, électricité & vanlife", phone: "+34 922 17 00 00", web: "#", gps: "https://maps.google.com/?q=Granadilla+de+Abona", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?w=500&auto=format&fit=crop&q=60" },
+                    { name: "Ferry Fred. Olsen Express", zone: "metropole", desc: "Santa Cruz - Liaisons inter-îles", phone: "+34 902 10 99 81", web: "https://fredolsen.es", gps: "https://maps.google.com/?q=Puerto+de+Santa+Cruz+de+Tenerife", img: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&auto=format&fit=crop&q=60" }
+                ]
+            }
+        };
+
+        // État de la pagination et des filtres
+        const itemsPerPage = 6;
+        let currentPages = {};
+        let currentZone = 'all';
+        let searchQuery = '';
+        let openCategories = {}; // mémorise si l'accordéon est ouvert
+
+        // Initialisation des pages
+        Object.keys(database).forEach(key => {
+            currentPages[key] = 1;
+            openCategories[key] = false; // Fermé par défaut
+        });
+
+        function toggleAccordion(key) {
+            openCategories[key] = !openCategories[key];
+            renderDirectory();
+        }
+
+        function changePage(key, direction, event) {
+            event.stopPropagation(); // Empêche de fermer l'accordéon
+            currentPages[key] += direction;
+            renderDirectory();
+        }
+
+        function filterZone(zone, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            currentZone = zone;
+            renderDirectory();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('globalSearch').value.toLowerCase().trim();
+            // Si l'utilisateur tape une recherche, on ouvre automatiquement les catégories qui ont des résultats
+            if (searchQuery.length > 0) {
+                Object.keys(database).forEach(key => {
+                    const matches = database[key].items.filter(item => 
+                        (currentZone === 'all' || item.zone === currentZone) &&
+                        (item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery))
+                    );
+                    if (matches.length > 0) openCategories[key] = true;
+                });
+            }
+            renderDirectory();
+        }
+
+        function renderDirectory() {
+            const container = document.getElementById('directory-container');
+            container.innerHTML = '';
+
+            for (const [key, section] of Object.entries(database)) {
+                // 1. Filtrer par zone et par recherche globale
+                const filteredItems = section.items.filter(item => {
+                    const matchZone = (currentZone === 'all' || item.zone === currentZone);
+                    const matchSearch = searchQuery === '' || 
+                        item.name.toLowerCase().includes(searchQuery) || 
+                        item.desc.toLowerCase().includes(searchQuery);
+                    return matchZone && matchSearch;
+                });
+
+                if (filteredItems.length === 0 && searchQuery !== '') continue; // Cache la catégorie si recherche sans résultat
+
+                // Pagination
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+                if (currentPages[key] > totalPages) currentPages[key] = 1;
+                const start = (currentPages[key] - 1) * itemsPerPage;
+                const paginatedItems = filteredItems.slice(start, start + itemsPerPage);
+
+                const isOpen = openCategories[key] || searchQuery !== '';
+
+                let sectionHtml = `
+                    <div class="category-section">
+                        <div class="category-header" onclick="toggleAccordion('${key}')">
+                            <span>${section.title}</span>
+                            <div>
+                                <span style="font-size:12px; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-right:8px;">${filteredItems.length} dispo</span>
+                                <span>${isOpen ? '▲' : '▼'}</span>
+                            </div>
+                        </div>
+                        <div class="category-content ${isOpen ? 'open' : ''}">
+                `;
+
+                if (paginatedItems.length === 0) {
+                    sectionHtml += `<p style="text-align:center; color:#64748b; font-size:13px; padding:10px;">Aucun résultat dans cette zone.</p>`;
+                } else {
+                    sectionHtml += `<div class="items-grid">`;
+                    paginatedItems.forEach(item => {
+                        let webBtn = item.web && item.web !== '#' ? `<a href="${item.web}" target="_blank" class="btn btn-web">🌐 Web</a>` : '';
+                        sectionHtml += `
+                            <div class="card">
+                                <img src="${item.img}" alt="${item.name}" class="card-img" loading="lazy">
+                                <div class="card-content">
+                                    <span class="zone-badge">${item.zone.toUpperCase()}</span>
+                                    <div class="card-title">${item.name}</div>
+                                    <div class="card-details">${item.desc}<br><small>📞 ${item.phone}</small></div>
+                                    <div class="card-actions">
+                                        <a href="${item.gps}" target="_blank" class="btn btn-gps">📍 GPS</a>
+                                        <a href="tel:${item.phone.replace(/[^0-9+]/g, '')}" class="btn btn-call">📞 Appeler</a>
+                                        ${webBtn}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    sectionHtml += `</div>`;
+
+                    // Contrôles de pagination si plusieurs pages
+                    if (totalPages > 1) {
+                        sectionHtml += `
+                            <div class="pagination">
+                                <button class="page-btn" ${currentPages[key] === 1 ? 'disabled' : ''} onclick="changePage('${key}', -1, event)">◀ Précédent</button>
+                                <span class="page-info">Page ${currentPages[key]} / ${totalPages}</span>
+                                <button class="page-btn" ${currentPages[key] === totalPages ? 'disabled' : ''} onclick="changePage('${key}', 1, event)">Suivant ▶</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                sectionHtml += `</div></div>`;
+                container.innerHTML += sectionHtml;
+            }
+        }
+
+        // Vérification du mode Admin via l'URL (?admin=damien)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'damien') {
+            document.getElementById('admin-banner').style.display = 'block';
+        }
+
+        // Chargement initial
+        renderDirectory();
+    </script>
+</body>
+</html>
