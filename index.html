@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenerife 24/7 - Répertoire Officiel & Espace Membres</title>
+<style>
+  :root {
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --accent: #f59e0b;
+    --bg-dark: #0f172a;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+
+  * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+  body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    padding: 10px;
+  }
+
+  #t247-wrapper {
+    background-color: var(--bg-light);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-width: 1200px;
+    margin: 20px auto;
+    border: 1px solid var(--border);
+  }
+
+  /* BARRE DE STATUT & ADMIN */
+  #t247-status-bar {
+    background: var(--bg-dark);
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .t247-badge-admin {
+    background: var(--success);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .t247-badge-timer {
+    background: var(--accent);
+    color: #000;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+  }
+  .t247-btn-small {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* PORTAIL D'ACCÈS / PAYWALL */
+  #t247-auth-gate {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+    color: white;
+    padding: 40px 25px;
+    text-align: center;
+  }
+  #t247-auth-gate h1 { margin: 0 0 10px; font-size: 28px; color: #fff; }
+  #t247-auth-gate p.subtitle { color: #cbd5e1; max-width: 700px; margin: 0 auto 30px; font-size: 16px; }
+  .t247-auth-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1050px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .t247-auth-card {
+    background: rgba(255, 255, 255, 0.97);
+    color: var(--text-main);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .t247-auth-card.pro-card { border-top: 5px solid var(--accent); }
+  .t247-auth-card.user-card { border-top: 5px solid var(--primary); }
+  .t247-auth-card.free-card { border-top: 5px solid var(--success); }
+  .t247-auth-card h3 { margin-top: 0; font-size: 20px; color: var(--bg-dark); }
+  .t247-input, .t247-select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+  }
+  .t247-btn-primary {
+    width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px;
+  }
+  .t247-btn-primary:hover { background: var(--primary-dark); }
+  .t247-btn-accent {
+    width: 100%; padding: 12px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px;
+  }
+  .t247-btn-success {
+    width: 100%; padding: 12px; background: var(--success); color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px;
+  }
+
+  /* CONTENU PRINCIPAL */
+  #t247-main-content { display: none; padding: 25px; }
+
+  .t247-header {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 25px;
+  }
+  .t247-header h2 { margin: 0; font-size: 26px; color: var(--bg-dark); }
+  .t247-domain-tag {
+    display: inline-block; background: #e0f2fe; color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 6px;
+  }
+  .t247-nav-tabs {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px;
+  }
+  .t247-nav-pill {
+    background: #fff; border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; transition: 0.2s;
+  }
+  .t247-nav-pill:hover, .t247-nav-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .t247-nav-pill.pro-pill { background: #fef3c7; border-color: var(--accent); color: #92400e; }
+
+  /* MOTEUR DE RECHERCHE */
+  .t247-search-box { max-width: 700px; margin: 0 auto 25px; position: relative; }
+  .t247-search-box input {
+    width: 100%; padding: 14px 20px 14px 45px; border: 2px solid var(--primary); border-radius: 30px; font-size: 15px; outline: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+  }
+  .t247-search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+
+  /* ACCORDÉONS */
+  .t247-section-title {
+    background: var(--bg-dark); color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 18px; margin: 30px 0 15px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .t247-accordion-item {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s ease;
+  }
+  .t247-accordion-header {
+    width: 100%; background: #fff; border: none; padding: 15px 20px; text-align: left; font-size: 16px; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .t247-accordion-header:hover { background: #f1f5f9; }
+  .t247-accordion-header span.tag { font-size: 12px; background: #e2e8f0; color: #475569; padding: 3px 8px; border-radius: 12px; font-weight: 600; margin-left: 10px; }
+  .t247-accordion-icon { font-size: 18px; font-weight: bold; color: var(--primary); transition: transform 0.2s; }
+  .t247-accordion-item.open .t247-accordion-icon { transform: rotate(45deg); }
+  .t247-accordion-body { display: none; padding: 15px 20px; background: #f8fafc; border-top: 1px solid var(--border); }
+  .t247-accordion-item.open .t247-accordion-body { display: block; }
+
+  .t247-field-list {
+    list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px;
+  }
+  .t247-field-list li {
+    background: #fff; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--primary); font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .t247-field-list li strong { color: var(--bg-dark); }
+
+  /* RUBRIQUES & ZONES */
+  .t247-rubriques-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
+  .t247-rubrique-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .t247-rubrique-card h4 { margin: 0 0 10px; color: var(--primary-dark); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .t247-rubrique-card ul { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; }
+
+  .t247-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div id="t247-wrapper">
+
+  <!-- BARRE DE STATUT (ADMIN / TIMER) -->
+  <div id="t247-status-bar">
+    <div><strong>🌴 TENERIFE 24/7</strong> — <span>GitHub Pages Repository</span></div>
+    <div id="t247-session-info"><span>Statut : Visiteur non connecté</span></div>
+  </div>
+
+  <!-- PORTAIL D'ACCÈS MEMBRES -->
+  <div id="t247-auth-gate">
+    <h1>Bienvenue sur Tenerife 24/7</h1>
+    <p class="subtitle">Le répertoire complet de l'île (25 bases interconnectées). Choisissez votre accès membre ou profitez d'un aperçu gratuit temporaire.</p>
+
+    <div class="t247-auth-grid">
+      <!-- ACCÈS PARTICULIERS -->
+      <div class="t247-auth-card user-card">
+        <div>
+          <h3>👤 Espace Particuliers & Touristes</h3>
+          <p style="font-size:13px; color:#475569;">Accès illimité aux bons plans, soirées, plages, spots vanlife et alertes live.</p>
+          <input type="email" id="user-email" class="t247-input" placeholder="Votre email (ex: client@email.com)">
+          <select id="user-plan" class="t247-select">
+            <option value="Pass 24h (2,90 €)">Pass 24h — 2,90 €</option>
+            <option value="Pass Semaine (6,90 €)">Pass Semaine — 6,90 €</option>
+            <option value="Pass Mois (14,90 €)">Pass Mois — 14,90 €</option>
+            <option value="Pass Annuel Résident (29,00 €)">Pass Annuel Résident — 29,00 €</option>
+          </select>
+        </div>
+        <button class="t247-btn-primary" onclick="t247LoginUser()">S'abonner & Accéder au site</button>
+      </div>
+
+      <!-- ACCÈS PROS -->
+      <div class="t247-auth-card pro-card">
+        <div>
+          <h3>🏢 Espace Propriétaires & Pros</h3>
+          <p style="font-size:13px; color:#475569;">Publiez votre établissement, vos événements et vos offres VIP sur l'île.</p>
+          <input type="text" id="pro-name" class="t247-input" placeholder="Nom de l'établissement / Pro">
+          <select id="pro-plan" class="t247-select">
+            <option value="Essai Pro 1 Mois (0 €)">Formule Découverte — 0 € (1 mois d'essai)</option>
+            <option value="Boost 24h (5 €)">Boost Événement 24h — 5 €</option>
+            <option value="Pack Visibilité 7 jours (19 €)">Pack Semaine — 19 €</option>
+            <option value="Abonnement Pro Mensuel (39 €)">Abonnement Pro Mensuel — 39 € / mois</option>
+            <option value="Partenaire VIP Premium (69 €)">Partenaire VIP & Bannière — 69 € / mois</option>
+          </select>
+        </div>
+        <button class="t247-btn-accent" onclick="t247LoginPro()">Accès Espace Pro & Gestion</button>
+      </div>
+
+      <!-- ACCÈS GRATUIT LIMITÉ -->
+      <div class="t247-auth-card free-card">
+        <div>
+          <h3>⏱️ Découverte Gratuite (3 Minutes)</h3>
+          <p style="font-size:13px; color:#475569;">Testez l'intégralité du répertoire gratuitement pendant <strong>3 minutes</strong>. À la fin du chrono, un abonnement sera requis.</p>
+        </div>
+        <button class="t247-btn-success" onclick="t247StartFreeTrial(3)">Lancer l'aperçu gratuit (3 min)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENU PRINCIPAL DU SITE -->
+  <div id="t247-main-content">
+    <div class="t247-header">
+      <h2>Architecture & Répertoire Officiel Tenerife 24/7</h2>
+      <div class="t247-domain-tag">🚀 Hébergé sur GitHub Pages</div>
+
+      <div class="t247-nav-tabs">
+        <button class="t247-nav-pill active" onclick="t247FilterSection('all', this)">Tout afficher</button>
+        <button class="t247-nav-pill" onclick="t247FilterSection('sorties', this)">Que faire ? (Activités/Mer)</button>
+        <button class="t247-nav-pill" onclick="t247FilterSection('logement', this)">Où dormir ? (Logements/Vans)</button>
+        <button class="t247-nav-pill" onclick="t247FilterSection('nightlife', this)">Où sortir ? (Bars/Clubs)</button>
+        <button class="t247-nav-pill" onclick="t247FilterSection('bienetre', this)">Bien-être & VIP</button>
+        <button class="t247-nav-pill" onclick="t247FilterSection('services', this)">Services & Infos pratiques</button>
+        <button class="t247-nav-pill pro-pill" onclick="t247FilterSection('pro', this)">💼 Espace Pro & Admin</button>
+      </div>
+    </div>
+
+    <!-- MOTEUR DE RECHERCHE PAR MOTS-CLÉS -->
+    <div class="t247-search-box">
+      <span class="t247-search-icon">🔍</span>
+      <input type="text" id="t247-search" onkeyup="t247SearchTables()" placeholder="Tapez un mot-clé (ex: Salsa, Vanlife, VIP, Teide, Tarifs, Massage, Météo)...">
+    </div>
+
+    <!-- LES 25 TABLES EN ACCORDÉON -->
+    <div class="t247-section-title">
+      <span>🗄️ Base de Données Complète : Les 25 Tables Interconnectées</span>
+      <button class="t247-btn-small" onclick="t247ToggleAll()">Tout déplier</button>
+    </div>
+
+    <div id="t247-accordion-container">
+      <div class="t247-accordion-item" data-cat="nightlife sorties">
+        <button class="t247-accordion-header" onclick="t247ToggleItem(this)"><div>1. Table « Événements & Soirées » <span class="tag">Agenda & Nightlife</span></div><span class="t247-accordion-icon">+</span></button>
+        <div class="t247-accordion-body"><ul class="t247-field-list"><li><strong>Nom de l'événement</strong></li><li><strong>Soumis par :</strong> Lien vers Organisateurs & Pros</li><li><strong>Date et Heure</strong></li><li><strong>Moment :</strong> Matin, Midi, Soir, Nuit</li><li><strong>Lieu :</strong> Lien vers Lieux & Sorties</li><li><strong>Type :</strong> Salsa/SBK, DJ Set, Concert Live, Fête locale, Soirée à thème</li><li><strong>Affiche / Photo</strong></li><li><strong>Prix</strong></li><li><strong>Option Boost / Mis en avant :</strong> Payant / Oui/Non</li><li><strong>Statut de validation :</strong> En attente, Approuvé, Refusé</li><li><strong>Option Premium :</strong> Oui/Non</li></ul></div>
+      </div>
+
+      
