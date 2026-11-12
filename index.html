@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenerife 24/7 - Répertoire Officiel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-main); line-height: 1.6; }
+        #t247-wrapper { background-color: var(--bg-light); max-width: 1200px; margin: 20px auto; border: 1px solid var(--border); border-radius: var(--radius); }
+        #t247-auth-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .gate-card { background: #fff; max-width: 550px; width: 100%; padding: 30px; border-radius: var(--radius); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .gate-card h2 { color: var(--bg-dark); margin-bottom: 10px; font-size: 24px; }
+        .gate-card p { color: var(--text-muted); margin-bottom: 25px; font-size: 15px; }
+        .gate-btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 12px; display: inline-block; text-decoration: none; }
+        .gate-btn.stripe-btn { background: #635bff; }
+        .gate-btn.trial-btn { background: var(--accent); color: #000; }
+        .gate-btn.pro-btn { background: var(--success); }
+        #t247-status-bar { background: var(--bg-dark); color: #fff; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .t247-badge-admin { background: var(--success); color: #fff; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
+        .t247-header { background: #fff; padding: 25px; text-align: center; border-bottom: 2px solid var(--border); }
+        .t247-header h1 { margin: 0; font-size: 28px; color: var(--bg-dark); }
+        .t247-domain-tag { display: inline-block; background: #e0f2fe; color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 8px; }
+        .ticker-container { background: var(--accent); color: #000; overflow: hidden; white-space: nowrap; padding: 10px 0; font-weight: bold; }
+        .ticker-text { display: inline-block; animation: marquee 30s linear infinite; }
+        @keyframes marquee { 0% { transform: translate3d(100%, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        #t247-main-content { padding: 25px; }
+        .section-title { background: var(--bg-dark); color: #fff; padding: 14px 20px; border-radius: 8px; font-size: 18px; margin: 20px 0 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .district-filter { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+        .district-btn { background: #fff; border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 14px; }
+        .district-btn.active, .district-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .t247-accordion-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .t247-accordion-header { width: 100%; background: #fff; border: none; padding: 16px 20px; text-align: left; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .t247-accordion-header:hover { background: #f1f5f9; }
+        .t247-accordion-body { display: none; padding: 20px; background: #f8fafc; border-top: 1px solid var(--border); }
+        .t247-accordion-item.open .t247-accordion-body { display: block; }
+        .directory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
+        .directory-card { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between; }
+        .card-img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; background: #e2e8f0; }
+        .directory-card h4 { color: var(--primary-dark); margin-bottom: 6px; font-size: 16px; }
+        .directory-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        .card-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-mini { display: inline-block; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; color: #fff; background: var(--primary); }
+        .btn-mini.tel { background: var(--success); }
+        .btn-mini.web { background: var(--bg-dark); }
+        .badge-tag { display: inline-block; background: #e0f2fe; color: var(--primary-dark); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-bottom: 8px; width: fit-content; }
+        footer { background: var(--bg-dark); color: #fff; text-align: center; padding: 20px; margin-top: 40px; font-size: 14px; }
+        footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div id="t247-auth-gate">
+        <div class="gate-card">
+            <h2>Tenerife 24/7 - Portail d'Accès</h2>
+            <p>Sélectionnez votre profil pour explorer les établissements en direct.</p>
+            <button class="gate-btn stripe-btn" onclick="document.getElementById('t247-auth-gate').style.display='none'; document.getElementById('user-status-badge').textContent='Pass Touriste';">Accès Touriste / Particulier</button>
+            <button class="gate-btn trial-btn" onclick="document.getElementById('t247-auth-gate').style.display='none'; document.getElementById('user-status-badge').textContent='Exploration Libre';">Exploration Libre (Accès Immédiat)</button>
+            <button class="gate-btn pro-btn" onclick="document.getElementById('t247-auth-gate').style.display='none'; document.getElementById('user-status-badge').textContent='Espace Pro';">Accès Professionnels</button>
+        </div>
+    </div>
+
+    <div id="t247-wrapper">
+        <div id="t247-status-bar">
+            <span><i class="fa-solid fa-shield-halved"></i> Tenerife 24/7 (Admin actif)</span>
+            <div>
+                <span id="user-status-badge" class="t247-badge-admin">Admin</span>
+                <button onclick="document.getElementById('t247-auth-gate').style.display='flex'" style="background:transparent; border:1px solid #fff; color:#fff; padding:2px 8px; border-radius:4px; margin-left:8px; cursor:pointer; font-size:12px;">Profil</button>
+            </div>
+        </div>
+
+        <header class="t247-header">
+            <h1>Tenerife 24h/24 & 7j/7</h1>
+            <div class="t247-domain-tag">damien150482.github.io/Tenerife247</div>
+        </header>
+
+        <div class="ticker-container">
+            <div class="ticker-text">🔥 Annuaire officiel de l'île • Hôtels, Restaurants, Bars, Plages et Services • Contact Admin : +33 6 15 32 72 87</div>
+        </div>
+
+        <main id="t247-main-content">
+            <div class="district-filter">
+                <button class="district-btn active" onclick="filterDistrict('all', this)">Toutes les Zones</button>
+                <button class="district-btn" onclick="filterDistrict('south', this)">Sud (Adeje, Médano)</button>
+                <button class="district-btn" onclick="filterDistrict('north', this)">Nord (Puerto)</button>
+                <button class="district-btn" onclick="filterDistrict('metro', this)">Métropole (Santa Cruz)</button>
+                <button class="district-btn" onclick="filterDistrict('west', this)">Ouest (Teide)</button>
+            </div>
+
+            <h3 class="section-title">
+                <span>Répertoire Officiel de Tenerife</span>
+                <span style="font-size: 13px; font-weight: normal;">Actif & Sécurisé</span>
+            </h3>
+
+            <!-- ACCORDÉON 1 -->
+            <div class="t247-accordion-item open">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>1. Hébergements, Hôtels & Vanlife</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body" style="display: block;">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="south">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" alt="Hôtel Sud" class="card-img">
+                                <span class="badge-tag">Sud Tenerife</span>
+                                <h4>Hotel Playa Sur Tenerife</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> El Médano, Granadilla</p>
+                                <p><i class="fa-solid fa-phone"></i> +34 922 17 60 20</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Playa+Sur+Tenerife+El+Medano" target="_blank" class="btn-mini">GPS</a>
+                                <a href="tel:+34922176020" class="btn-mini tel">Appeler</a>
+                            </div>
+                        </div>
+                        <div class="directory-card" data-zone="north">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" alt="Hôtel Nord" class="card-img">
+                                <span class="badge-tag">Nord Tenerife</span>
+                                <h4>Hotel Botanico & The Oriental Spa Garden</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Puerto de la Cruz</p>
+                                <p><i class="fa-solid fa-phone"></i> +34 922 38 14 00</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Hotel+Botanico+Puerto+de+la+Cruz" target="_blank" class="btn-mini">GPS</a>
+                                <a href="tel:+34922381400" class="btn-mini tel">Appeler</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 2 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>2. Restaurants, Guachinches & Bars</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="south">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80" alt="Resto" class="card-img">
+                                <span class="badge-tag">Sud Tenerife</span>
+                                <h4>Guachinche El Cordero</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Chayofa, Arona</p>
+                                <p><i class="fa-solid fa-phone"></i> +34 922 16 02 14</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Guachinche+El+Cordero+Tenerife" target="_blank" class="btn-mini">GPS</a>
+                                <a href="tel:+34922160214" class="btn-mini tel">Appeler</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 3 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>3. Plages, Nautisme & Sorties en Mer</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="south">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80" alt="Mer" class="card-img">
+                                <span class="badge-tag">Sud Tenerife</span>
+                                <h4>Puerto Colón (Excursions Bateau)</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Costa Adeje</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Puerto+Colon+Costa+Adeje" target="_blank" class="btn-mini">GPS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 4 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>4. Excursions, Teide & Loisirs</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="west">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80" alt="Teide" class="card-img">
+                                <span class="badge-tag">Ouest / Teide</span>
+                                <h4>Téléphérique du Teide</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Parquet National du Teide</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Teleferico+del+Teide" target="_blank" class="btn-mini">GPS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 5 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>5. Bien-être, Spas & Sport</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="south">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80" alt="Spa" class="card-img">
+                                <span class="badge-tag">Sud Tenerife</span>
+                                <h4>Aqua Club Thermal</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Torviscas Alto, Adeje</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Aqua+Club+Thermal+Adeje" target="_blank" class="btn-mini">GPS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 6 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>6. Garages, Vanlife & Services Pratiques</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" data-zone="south">
+                            <div>
+                                <img src="https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=600&q=80" alt="Garage" class="card-img">
+                                <span class="badge-tag">Sud Tenerife</span>
+                                <h4>Taller Mecánico Las Chafiras</h4>
+                                <p><i class="fa-solid fa-location-dot"></i> Las Chafiras, San Miguel</p>
+                            </div>
+                            <div class="card-actions">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Taller+Mecanico+Las+Chafiras" target="_blank" class="btn-mini">GPS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCORDÉON 7 -->
+            <div class="t247-accordion-item">
+                <button class="t247-accordion-header" onclick="toggleAccordion(this)">
+                    <span>7. Espace Pro & Inscription Partenaires</span><i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="t247-accordion-body">
+                    <div class="directory-grid">
+                        <div class="directory-card" style="border-left-color: var(--accent);">
+                            <h4>Pass Pro / Coup de Projecteur</h4>
+                            <p>Mettez votre établissement en avant pour 5€ / 10€.</p>
+                            <a href="mailto:damien19821@outlook.fr" class="btn-mini">Contact Admin</a>
+                        </div>
+                        <div class="directory-card" style="border-left-color: var(--success);">
+                            <h4>Abonnement Partenaire</h4>
+                            <p>Fiche permanente avec bouton WhatsApp direct.</p>
+                            <a href="https://wa.me/33615327287" target="_blank" class="btn-mini tel">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 Tenerife 24/7 — Contact : damien19821@outlook.fr</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleAccordion(btn) {
+            const item = btn.parentElement;
+            item.classList.toggle('open');
+            const body = item.querySelector('.t247-accordion-body');
+            body.style.display = item.classList.contains('open') ? 'block' : 'none';
+        }
+
+        function filterDistrict(zone, btnElement) {
+            document.querySelectorAll('.district-btn').forEach(b => b.classList.remove('active'));
+            if (btnElement) btnElement.classList.add('active');
+
+            document.querySelectorAll('.directory-card').forEach(card => {
+                if (zone === 'all' || card.getAttribute('data-zone') === zone) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
