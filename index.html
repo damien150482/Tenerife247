@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenerife 24/7 — Répertoire Officiel & Espace Membres</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-main); line-height: 1.6; }
+        
+        header { background: var(--bg-dark); color: white; padding: 2rem 1rem; text-align: center; position: relative; }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.3rem; }
+        .domain-tag { display: inline-block; background: #e0f2fe; color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-top: 5px; }
+
+        /* Widget de Traduction en haut à droite */
+        #google_translate_element { position: absolute; top: 15px; right: 15px; z-index: 100; }
+        .goog-te-combo { padding: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 12px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Tarifs & Abonnements Stripe */
+        .pricing-wrapper { background: white; border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow); }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); font-weight: bold; border-radius: 20px; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+        .price-card { border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; text-align: center; display: flex; flex-direction: column; justify-content: space-between; background: #fff; }
+        .price-card.popular { border: 2px solid var(--accent); background: #fffdf4; }
+        .price-card h3 { font-size: 1.1rem; color: var(--bg-dark); margin-bottom: 5px; }
+        .price-amount { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 8px 0; }
+        .price-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; }
+        .btn-stripe { background: #635bff; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s; text-decoration: none; display: inline-block; }
+        .btn-stripe:hover { background: #4b42db; }
+
+        /* Recherche & Filtres A-Z */
+        .search-box { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; background: white; padding: 1rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .search-box input, .search-box select { flex: 1; min-width: 180px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; }
+        
+        .alphabet-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-bottom: 1.5rem; }
+        .alpha-btn { background: white; border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; color: var(--bg-dark); }
+        .alpha-btn.active, .alpha-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Grille des fiches (Anti-bug volume 46k) */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); position: relative; border-left: 4px solid var(--primary); }
+        .card.premium { border-left: 4px solid var(--accent); background: #fffdf7; }
+        .badge-pro { position: absolute; top: 12px; right: 12px; background: var(--accent); color: #000; font-size: 0.72rem; font-weight: bold; padding: 3px 8px; border-radius: 10px; }
+        .tag { display: inline-block; background: #e0f2fe; color: var(--primary-dark); font-size: 0.78rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; font-weight: 600; }
+        .card h3 { margin-bottom: 0.4rem; font-size: 1.2rem; color: var(--bg-dark); }
+        .card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; border-top: 1px solid var(--border); padding-top: 10px; }
+        .locked-contact { color: var(--accent); font-weight: bold; cursor: pointer; text-decoration: underline; }
+
+        .load-more-container { text-align: center; margin: 2rem 0; }
+        .btn-load { background: var(--primary); color: white; border: none; padding: 12px 28px; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <!-- Widget Google Traduction automatique (Anglais, Chinois, Espagnol, etc.) -->
+    <div id="google_translate_element"></div>
+    
+    <h1>Tenerife 24/7</h1>
+    <div class="domain-tag">damien150482.github.io</div>
+</header>
+
+<div class="container">
+    <!-- SECTION CATALOGUE STRIPE INTÉGRÉ (Prix exacts du dashboard) -->
+    <div class="pricing-wrapper">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('touriste')">🌴 Pass Touristes & Voyageurs</button>
+            <button class="tab-btn" onclick="switchTab('pro')">💼 Espace Professionnels</button>
+        </div>
+
+        <!-- Touristes -->
+        <div class="pricing-grid" id="gridTouriste">
+            <div class="price-card">
+                <div><h3>Pass 24 Heures</h3><div class="price-amount">3,00 €</div><p class="price-sub">Accès immédiat et illimité 24h[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PASS_24H" target="_blank" class="btn-stripe">Acheter le Pass</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Pass Semaine</h3><div class="price-amount">7,00 €</div><p class="price-sub">7 jours d'accès complet à l'annuaire[span_5](start_span)[span_5](end_span)[span_6](start_span)[span_6](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PASS_SEMAINE" target="_blank" class="btn-stripe">Acheter le Pass</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Pass Tribu / Duo</h3><div class="price-amount">12,00 €</div><p class="price-sub">Séjour groupé / couples en van[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PASS_DUO" target="_blank" class="btn-stripe">Acheter le Pass</a>
+            </div>
+            <div class="price-card popular">
+                <div><h3>Pass Intégral (1 Mois)</h3><div class="price-amount">15,00 €</div><p class="price-sub">Pour nomades et longs séjours[span_9](start_span)[span_9](end_span)[span_10](start_span)[span_10](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PASS_MOIS" target="_blank" class="btn-stripe">S'abonner</a>
+            </div>
+        </div>
+
+        <!-- Professionnels -->
+        <div class="pricing-grid" id="gridPro" style="display: none;">
+            <div class="price-card">
+                <div><h3>Pass Pro à la Journée</h3><div class="price-amount">5,00 €</div><p class="price-sub">Annonce éclair de dernière minute[span_11](start_span)[span_11](end_span)[span_12](start_span)[span_12](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PRO_JOUR" target="_blank" class="btn-stripe">Activer</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Pass Pro Coup de Projecteur</h3><div class="price-amount">10,00 €</div><p class="price-sub">Épinglé en haut pendant 48h[span_13](start_span)[span_13](end_span)[span_14](start_span)[span_14](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PRO_VIP" target="_blank" class="btn-stripe">Booster</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Pass Pro Événement (Semaine)</h3><div class="price-amount">15,00 €</div><p class="price-sub">Promo intensive soirée SBK / concert[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PRO_EVENT" target="_blank" class="btn-stripe">Activer</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Option Pack Annonce Flash</h3><div class="price-amount">8,00 €</div><p class="price-sub">Offre flash / dernière minute[span_17](start_span)[span_17](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_FLASH" target="_blank" class="btn-stripe">Activer</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Option Vitrine Premium</h3><div class="price-amount">22,00 €</div><p class="price-sub">Bouton WhatsApp direct / Leads[span_18](start_span)[span_18](end_span)[span_19](start_span)[span_19](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_VITRINE" target="_blank" class="btn-stripe">Souscrire</a>
+            </div>
+            <div class="price-card popular">
+                <div><h3>Partenaire Mensuel</h3><div class="price-amount">29,00 €</div><p class="price-sub">Visibilité continue permanente[span_20](start_span)[span_20](end_span)[span_21](start_span)[span_21](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PRO_MENSUEL" target="_blank" class="btn-stripe">S'abonner</a>
+            </div>
+            <div class="price-card">
+                <div><h3>Partenaire Annuel</h3><div class="price-amount">250,00 €</div><p class="price-sub">Une année entière au meilleur tarif[span_22](start_span)[span_22](end_span)[span_23](start_span)[span_23](end_span)</p></div>
+                <a href="https://buy.stripe.com/TON_LIEN_STRIPE_PRO_ANNUEL" target="_blank" class="btn-stripe">S'abonner 1 an</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECHERCHE & FILTRES -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher de A à Z (restaurant, vanlife, médecin...)" onkeyup="resetAndFetch()">
+        <select id="categoryFilter" onchange="resetAndFetch()">
+            <option value="">Toutes les catégories</option>
+            <option value="Hébergement">Hébergements & Vanlife</option>
+            <option value="Restauration">Restauration & Guachinches</option>
+            <option value="Soirées & SBK">Soirées Salsa, Bachata & Kizomba</option>
+            <option value="Excursions">Excursions & Loisirs</option>
+            <option value="Services">Services & Artisans</option>
+        </select>
+        <select id="zoneFilter" onchange="resetAndFetch()">
+            <option value="">Toute l'île</option>
+            <option value="Sud">Sud (Touristique & Festif)</option>
+            <option value="Nord">Nord (Nature & Authentique)</option>
+            <option value="Metropole">Métropole & Est</option>
+            <option value="Ouest">Ouest & Intérieur</option>
+        </select>
+    </div>
+
+    <!-- INDEX ALPHABÉTIQUE A-Z -->
+    <div class="alphabet-bar" id="alphabetBar"></div>
+
+    <!-- LISTE DES RÉSULTATS -->
+    <div class="grid" id="resultsGrid"></div>
+
+    <div class="load-more-container">
+        <button class="btn-load" id="loadMoreBtn" onclick="fetchPros()">Afficher les résultats suivants</button>
+    </div>
+</div>
+
+<!-- Script Google Traduction -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'fr', includedLanguages: 'en,es,zh-CN,de,it,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+    const AIRTABLE_TOKEN = "TON_TOKEN_AIRTABLE_ICI";
+    const AIRTABLE_BASE_ID = "TON_BASE_ID_ICI";
+    const TABLE_NAME = "Professionnels";
+
+    let isTouristSubscribed = localStorage.getItem("tenerife_pass_active") === "true";
+    if (window.location.search.includes("payment=success")) {
+        localStorage.setItem("tenerife_pass_active", "true");
+        isTouristSubscribed = true;
+    }
+
+    let currentLetter = "";
+    let offset = "";
+
+    function switchTab(type) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(type)));
+        document.getElementById("gridTouriste").style.display = type === "touriste" ? "grid" : "none";
+        document.getElementById("gridPro").style.display = type === "pro" ? "grid" : "none";
+    }
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const alphaBar = document.getElementById("alphabetBar");
+    alphaBar.innerHTML = `<button class="alpha-btn active" onclick="selectLetter('', this)">Tous</button>`;
+    alphabet.forEach(letter => { alphaBar.innerHTML += `<button class="alpha-btn" onclick="selectLetter('${letter}', this)">${letter}</button>`; });
+
+    function selectLetter(letter, btn) {
+        document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLetter = letter;
+        resetAndFetch();
+    }
+
+    function resetAndFetch() { offset = ""; document.getElementById("resultsGrid").innerHTML = ""; fetchPros(); }
+
+    async function fetchPros() {
+        const search = document.getElementById("searchInput").value.toLowerCase();
+        const cat = document.getElementById("categoryFilter").value;
+        const zone = document.getElementById("zoneFilter").value;
+
+        if (AIRTABLE_TOKEN === "TON_TOKEN_AIRTABLE_ICI") { renderDemoData(search, cat, zone); return; }
+
+        let formulas = [];
+        if (cat) formulas.push(`{Categorie} = '${cat}'`);
+        if (zone) formulas.push(`{Zone} = '${zone}'`);
+        if (currentLetter) formulas.push(`LEFT(UPPER({Nom}), 1) = '${currentLetter}'`);
+        if (search) formulas.push(`SEARCH('${search}', LOWER({Nom} & ' ' & {Description})) > 0`);
+
+        let filterFormula = formulas.length > 0 ? `AND(${formulas.join(",")})` : "";
+        let url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${TABLE_NAME}?pageSize=20&sort[0][field]=Premium&sort[0][direction]=desc&sort[1][field]=Nom&sort[1][direction]=asc`;
+        if (filterFormula) url += `&filterByFormula=${encodeURIComponent(filterFormula)}`;
+        if (offset) url += `&offset=${offset}`;
+
+        try {
+            const response = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } });
+            const data = await response.json();
+            offset = data.offset || "";
+            document.getElementById("loadMoreBtn").style.display = offset ? "inline-block" : "none";
+            renderCards(data.records.map(r => r.fields));
+        } catch (error) { console.error("Erreur API:", error); }
+    }
+
+    function renderCards(items) {
+        const grid = document.getElementById("resultsGrid");
+        items.forEach(pro => {
+            const isPremium = pro.Premium ? "premium" : "";
+            const badge = pro.Premium ? `<span class="badge-pro">★ VIP / Partenaire</span>` : "";
+            const contactHTML = isTouristSubscribed 
+                ? `<span>📞 ${pro.Telephone}</span><a href="https://wa.me/${pro.Telephone.replace(/[^0-9]/g, '')}" target="_blank" style="color: var(--primary); font-weight: bold; text-decoration: none;">WhatsApp →</a>`
+                : `<span class="locked-contact" onclick="alert('Veuillez activer votre Pass sur le catalogue en haut pour voir les contacts directs.')">🔒 Contact réservé aux abonnés Pass</span>`;
+
+            grid.innerHTML += `
+                <div class="card ${isPremium}">
+                    ${badge}
+                    <span class="tag">${pro.Categorie} • ${pro.Zone}</span>
+                    <h3>${pro.Nom}</h3>
+                    <p>${pro.Description}</p>
+                    <div class="card-footer">${contactHTML}</div>
+                </div>
+            `;
+        });
+    }
+
+    function renderDemoData(search, cat, zone) {
+        const demo = [
+            { Nom: "Atlantico Excursions", Categorie: "Excursions", Zone: "Sud", Telephone: "+34611223344", Description: "Sorties en catamaran et observation des dauphins à Costa Adeje.", Premium: true },
+            { Nom: "Noche Latina SBK", Categorie: "Soirées & SBK", Zone: "Sud", Telephone: "+34622445566", Description: "Grande soirée Salsa Bachata Kizomba ce vendredi.", Premium: true },
+            { Nom: "Guachenche El Teide", Categorie: "Restauration", Zone: "Nord", Telephone: "+34922334455", Description: "Cuisine traditionnelle canarienne et vin local.", Premium: false }
+        ];
+        const filtered = demo.filter(p => (!cat || p.Categorie === cat) && (!zone || p.Zone === zone) && (!currentLetter || p.Nom.toUpperCase().startsWith(currentLetter)) && (!search || p.Nom.toLowerCase().includes(search)));
+        document.getElementById("loadMoreBtn").style.display = "none";
+        renderCards(filtered);
+    }
+
+    fetchPros();
+</script>
+</body>
+</html>
