@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenerife 24/7 — Annuaire & Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- En-tête -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-500 text-slate-900 font-bold p-2 rounded-xl text-xl">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Tenerife 24/7</h1>
+                    <p class="text-xs text-slate-400">L'annuaire pratique et nomade de l'île</p>
+                </div>
+            </div>
+            <!-- Bouton Favoris -->
+            <button onclick="toggleFavoritesView()" id="fav-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-heart"></i> Favoris (<span id="fav-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Barre de recherche, filtres géographiques et tri alphabétique -->
+    <section class="max-w-4xl mx-auto w-full px-4 pt-6 pb-4 space-y-3">
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                <input type="text" id="search-input" placeholder="Rechercher une activité, un service, un lieu..." 
+                    class="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm"
+                    oninput="filterContent()">
+            </div>
+            <select id="zone-filter" onchange="filterContent()" class="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm">
+                <option value="all">Toutes les zones</option>
+                <option value="sud">Sud (Los Cristianos, Adeje, Médano...)</option>
+                <option value="nord">Nord (La Laguna, Orotava, Santa Cruz...)</option>
+                <option value="ile">Île entière / Mobile</option>
+            </select>
+        </div>
+
+        <!-- Barre de recherche alphabétique (A-Z) -->
+        <div id="alpha-filter" class="flex flex-wrap gap-1 bg-white p-2 rounded-xl border border-slate-200 shadow-sm text-xs justify-center">
+            <button onclick="filterByLetter('all')" id="letter-all" class="px-2.5 py-1 rounded-lg font-semibold bg-amber-500 text-slate-900 transition">Tous</button>
+            <!-- Généré dynamiquement en JS -->
+        </div>
+    </section>
+
+    <!-- Conteneur principal des accordéons -->
+    <main class="max-w-4xl mx-auto w-full px-4 pb-12 flex-1">
+        <div id="categories-container" class="space-y-3">
+            <!-- Injecté dynamiquement par JavaScript -->
+        </div>
+        <div id="no-results" class="hidden text-center py-12 text-slate-500">
+            Aucun résultat ne correspond à votre recherche ou filtre.
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-2">
+            <p>Tenerife 24/7 — Conçu pour la vie nomade et locale.</p>
+            <p class="text-slate-500">Hébergé sur GitHub Pages</p>
+        </div>
+    </footer>
+
+    <!-- Script de gestion des données, accordéons, favoris et filtre alphabétique -->
+    <script>
+        const categoriesData = [
+            {
+                id: "transport",
+                title: "Transport & Mobilité",
+                icon: "fa-car",
+                items: [
+                    { name: "Location de voitures et utilitaires", zone: "ile", desc: "Agences locales et grandes enseignes." },
+                    { name: "Aménagement, réparation et entretien de vans et camping-cars", zone: "sud", desc: "Garages spécialisés et pièces détachées VASP." },
+                    { name: "Lignes de bus (Titsa) et abonnements", zone: "ile", desc: "Réseau de transport en commun et cartes ten+." },
+                    { name: "Liaisons maritimes (ferries inter-îles) et ports principaux", zone: "ile", desc: "Los Cristianos, Santa Cruz, liaisons La Gomera / Gran Canaria." }
+                ]
+            },
+            {
+                id: "loisirs",
+                title: "Loisirs & Activités Extérieures",
+                icon: "fa-person-hiking",
+                items: [
+                    { name: "Randonnées et sentiers dans les parcs naturels (Teide, Anaga)", zone: "nord", desc: "Permis, sentiers balisés et refuges." },
+                    { name: "Sports nautiques (surf, kitesurf, paddle)", zone: "sud", desc: "Spots phares à El Médano, La Tejita et Las Américas." },
+                    { name: "Sorties en mer et observation des cétacés", zone: "sud", desc: "Excursions écoresponsables depuis Costa Adeje et Los Cristianos." },
+                    { name: "Pêche sous-marine et clubs de plongée", zone: "sud", desc: "Réglementation, licences et spots de plongée." },
+                    { name: "Vol libre et parapente", zone: "sud", desc: "Sites d'envol à Taucho et Ifonche." }
+                ]
+            },
+            {
+                id: "culture",
+                title: "Culture, Danse & Vie Nocturne",
+                icon: "fa-music",
+                items: [
+                    { name: "Soirées, ateliers et cours de Salsa, Bachata et Kizomba (SBK)", zone: "sud", desc: "Sociales, bars latinos et cours en plein air." },
+                    { name: "Bars, rooftops et salles de concert live", zone: "ile", desc: "Lieux de diffusion musicale et acoustique." },
+                    { name: "Événements culturels et fêtes locales", zone: "ile", desc: "Romerías, festivals et traditions canariennes." },
+                    { name: "Marchés traditionnels et artisanat d'art", zone: "nord", desc: "Patios historiques et marchés de producteurs." }
+                ]
+            },
+            {
+                id: "gastronomie",
+                title: "Gastronomie & Terroir",
+                icon: "fa-utensils",
+                items: [
+                    { name: "Guachinches et cuisine traditionnelle canarienne", zone: "nord", desc: "Vins de producteurs et plats familiaux authentiques." },
+                    { name: "Marchés de producteurs locaux et bio", zone: "ile", desc: "Fruits tropicaux, fromages de chèvre et miels de l'île." },
+                    { name: "Domaines viticoles et dégustations de vins de Tenerife", zone: "nord", desc: "Caves volcaniques (Tacoronte-Acentejo, Valle de la Orotava)." },
+                    { name: "Épiceries en vrac et circuits courts", zone: "sud", desc: "Approvisionnement responsable et local." }
+                ]
+            },
+            {
+                id: "bienetre",
+                title: "Bien-être & Nature",
+                icon: "fa-spa",
+                items: [
+                    { name: "Soins naturels, transformation de l'aloe vera et herboristerie", zone: "ile", desc: "Plantes médicinales locales et cosmétiques artisanaux." },
+                    { name: "Espaces de détente, spas et bains thermaux", zone: "sud", desc: "Centres de bien-être et thalassothérapie." },
+                    { name: "Pratiques corporelles, yoga et remise en forme en plein air", zone: "ile", desc: "Séances face à l'océan et parcs naturels." },
+                    { name: "Massages et thérapies holistiques", zone: "sud", desc: "Praticiens indépendants et approches douces." }
+                ]
+            },
+            {
+                id: "services",
+                title: "Services Pratiques & Nomadisme",
+                icon: "fa-laptop",
+                items: [
+                    { name: "Espaces de coworking et coliving", zone: "sud", desc: "Connexions haut débit et postes partagés." },
+                    { name: "Dépannage mécanique, pièces détachées et garages de confiance", zone: "ile", desc: "Entretien poids lourds et véhicules légers." },
+                    { name: "Location de matériel de plein air et de camping", zone: "sud", desc: "Tentes, matelas et équipements nomades." },
+                    { name: "Petites annonces et services entre particuliers", zone: "ile", desc: "Entraide, covoiturage et bourses d'échange." }
+                ]
+            },
+            {
+                id: "hebergements",
+                title: "Hébergements & Séjours",
+                icon: "fa-house",
+                items: [
+                    { name: "Gîtes ruraux et maisons de village", zone: "nord", desc: "Casas rurales authentiques de charme." },
+                    { name: "Aires de stationnement et services autorisés pour camping-cars", zone: "ile", desc: "Emplacements légaux, vidange et eau." },
+                    { name: "Éco-lodges et hébergements insolites", zone: "sud", desc: "Séjours immersifs respectueux de l'environnement." }
+                ]
+            },
+            {
+                id: "bricolage",
+                title: "Bricolage, Matériaux & Récupération",
+                icon: "fa-hammer",
+                items: [
+                    { name: "Quincailleries, drogueries et grandes surfaces de bricolage", zone: "ile", desc: "Leroy Merlin, Conforama et petits commerces de quartier." },
+                    { name: "Pièces détachées auto, outillage et matériaux pour aménagement de vans", zone: "sud", desc: "Bois, visserie et quincaillerie technique." },
+                    { name: "Ressourceries, brocantes et marchés aux puces (rastros)", zone: "ile", desc: "Chine, mobilier de seconde main et objets insolites." }
+                ]
+            },
+            {
+                id: "sante",
+                title: "Santé, Urgences & Sécurité",
+                icon: "fa-kit-medical",
+                items: [
+                    { name: "Centres de santé (Centro de Salud) et pharmacies de garde", zone: "ile", desc: "Urgences médicales et services de soins primaires." },
+                    { name: "Vétérinaires, cliniques pour animaux et services d'urgence", zone: "ile", desc: "Soins 24h/24 pour animaux de compagnie." },
+                    { name: "Ostéopathes, kinésithérapeutes et thérapeutes du sport", zone: "sud", desc: "Récupération physique et soins ostéopathiques." },
+                    { name: "Assistance routière, dépannage et commissariats", zone: "ile", desc: "Numéros utiles et postes de police locale." }
+                ]
+            },
+            {
+                id: "achats",
+                title: "Achats Écoresponsables & Vrac",
+                icon: "fa-seedling",
+                items: [
+                    { name: "Épiceries bio, vrac et producteurs locaux en circuit court", zone: "ile", desc: "Consommation durable et zéro déchet." },
+                    { name: "Friperies, boutiques de seconde main et recycleries", zone: "sud", desc: "Vêtements vintage et alternative circulaire." },
+                    { name: "Matériel solaire, batteries et autonomie énergétique pour l'habitat mobile", zone: "ile", desc: "Panneaux solaires, convertisseurs et régulateurs 12V." }
+                ]
+            },
+            {
+                id: "numerique",
+                title: "Services Numériques & Professionnels",
+                icon: "fa-print",
+                items: [
+                    { name: "Imprimeries, papeteries et services de reprographie", zone: "ile", desc: "Copies, reliures et impressions grand format." },
+                    { name: "Réparation d'ordinateurs, téléphonie et électronique", zone: "sud", desc: "Maintenance informatique et matériel." },
+                    { name: "Traducteurs, conseils juridiques et accompagnement administratif (NIE, autonomos)", zone: "ile", desc: "Aide aux démarches administratives et fiscales en Espagne." }
+                ]
+            },
+            {
+                id: "animaux",
+                title: "Animaux de Compagnie & Vie Locale",
+                icon: "fa-paw",
+                items: [
+                    { name: "Plages autorisées aux chiens et parcs canins aménagés", zone: "ile", desc: "Espaces dédiés pour nos compagnons à quatre pattes." },
+                    { name: "Garderies, pensions et services de promenade pour animaux", zone: "sud", desc: "Accueil temporaire et pet-sitting." }
+                ]
+            },
+            {
+                id: "formalites",
+                title: "Formalités & Démarches Administratives",
+                icon: "fa-file-lines",
+                items: [
+                    { name: "Postes (Correos) et services d'expédition de colis", zone: "ile", desc: "Envois postaux, boîtes postales et retraits de colis." },
+                    { name: "Bureaux d'administration locale (Ayuntamiento, Extranjería)", zone: "ile", desc: "Certificats de padrón, NIE et résidences." },
+                    { name: "Banques, distributeurs et services de change", zone: "ile", desc: "Gestion bancaire et retraits d'espèces." }
+                ]
+            }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('tenerife_favs')) || [];
+        let showOnlyFavorites = false;
+        let selectedLetter = 'all';
+
+        function initAlphabetFilter() {
+            const container = document.getElementById('alpha-filter');
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+            
+            alphabet.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.id = `letter-${letter}`;
+                btn.textContent = letter;
+                btn.className = "px-2 py-1 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition";
+                btn.onclick = () => filterByLetter(letter);
+                container.appendChild(btn);
+            });
+        }
+
+        function filterByLetter(letter) {
+            selectedLetter = letter;
+            
+            // Mise à jour visuelle des boutons A-Z
+            document.querySelectorAll('#alpha-filter button').forEach(b => {
+                b.className = "px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition";
+            });
+            const activeBtn = document.getElementById(`letter-${letter.toLowerCase() === 'all' ? 'all' : letter}`);
+            if (activeBtn) {
+                activeBtn.className = "px-2.5 py-1 rounded-lg font-semibold bg-amber-500 text-slate-900 transition";
+            }
+            
+            filterContent();
+        }
+
+        function renderCategories(filterText = "", zoneFilter = "all") {
+            const container = document.getElementById('categories-container');
+            const noResults = document.getElementById('no-results');
+            container.innerHTML = "";
+
+            let hasVisibleContent = false;
+
+            categoriesData.forEach(cat => {
+                const filteredItems = cat.items.filter(item => {
+                    const matchesSearch = item.name.toLowerCase().includes(filterText.toLowerCase()) || 
+                                          item.desc.toLowerCase().includes(filterText.toLowerCase());
+                    const matchesZone = zoneFilter === "all" || item.zone === zoneFilter;
+                    const matchesFav = !showOnlyFavorites || favorites.includes(item.name);
+                    const matchesLetter = selectedLetter === 'all' || item.name.toUpperCase().startsWith(selectedLetter.toUpperCase());
+                    
+                    return matchesSearch && matchesZone && matchesFav && matchesLetter;
+                });
+
+                if (filteredItems.length > 0) {
+                    hasVisibleContent = true;
+                    
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition";
+                    
+                    let itemsHtml = filteredItems.map(item => {
+                        const isFav = favorites.includes(item.name);
+                        const zoneBadge = item.zone === 'sud' ? '<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-medium">Sud</span>' :
+                                          item.zone === 'nord' ? '<span class="bg-sky-100 text-sky-800 text-[10px] px-2 py-0.5 rounded-full font-medium">Nord</span>' :
+                                          '<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-medium">Île entière</span>';
+
+                        return `
+                            <div class="p-4 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex justify-between items-start gap-3 transition">
+                                <div class="space-y-1 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="font-medium text-slate-900 text-sm">${item.name}</h3>
+                                        ${zoneBadge}
+                                    </div>
+                                    <p class="text-xs text-slate-500">${item.desc}</p>
+                                </div>
+                                <button onclick="toggleFavorite('${item.name.replace(/'/g, "\\'")}')" class="text-slate-300 hover:text-amber-500 transition p-1">
+                                    <i class="${isFav ? 'fa-solid text-amber-500' : 'fa-regular'} fa-heart text-base"></i>
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+
+                    categoryDiv.innerHTML = `
+                        <button onclick="toggleAccordion('${cat.id}')" class="w-full px-5 py-4 flex justify-between items-center bg-white hover:bg-slate-50 transition text-left">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
+                                    <i class="fa-solid ${cat.icon}"></i>
+                                </div>
+                                <span class="font-semibold text-slate-900 text-sm sm:text-base">${cat.title}</span>
+                                <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">${filteredItems.length}</span>
+                            </div>
+                            <i id="icon-${cat.id}" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                        </button>
+                        <div id="content-${cat.id}" class="hidden border-t border-slate-100 bg-white">
+                            ${itemsHtml}
+                        </div>
+                    `;
+
+                    container.appendChild(categoryDiv);
+                }
+            });
+
+            noResults.classList.toggle('hidden', hasVisibleContent);
+            updateFavCount();
+        }
+
+        function toggleAccordion(id) {
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        function toggleFavorite(itemName) {
+            const index = favorites.indexOf(itemName);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(itemName);
+            }
+            localStorage.setItem('tenerife_favs', JSON.stringify(favorites));
+            filterContent();
+        }
+
+        function toggleFavoritesView() {
+            showOnlyFavorites = !showOnlyFavorites;
+            const btn = document.getElementById('fav-btn');
+            if (showOnlyFavorites) {
+                btn.classList.add('bg-amber-500', 'text-slate-900', 'border-amber-500');
+                btn.classList.remove('bg-slate-800', 'text-amber-400');
+            } else {
+                btn.classList.remove('bg-amber-500', 'text-slate-900', 'border-amber-500');
+                btn.classList.add('bg-slate-800', 'text-amber-400');
+            }
+            filterContent();
+        }
+
+        function updateFavCount() {
+            document.getElementById('fav-count').textContent = favorites.length;
+        }
+
+        function filterContent() {
+            const query = document.getElementById('search-input').value;
+            const zone = document.getElementById('zone-filter').value;
+            renderCategories(query, zone);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAlphabetFilter();
+            renderCategories();
+        });
+    </script>
+</body>
+</html>
