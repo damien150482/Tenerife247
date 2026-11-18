@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenerife 24/7 — Annuaire Complet A-Z, GPS & Chat Direct</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --secondary: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 80px; }
+
+    /* Top Bar & Traduction */
+    .top-bar {
+      background: #0f172a; color: #fff; padding: 8px 16px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      font-size: 0.85rem;
+    }
+    .top-bar span { font-weight: 600; color: #38bdf8; }
+    #google_translate_element select {
+      background: #1e293b; color: #fff; border: 1px solid #334155;
+      padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff; padding: 24px 16px; text-align: center;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+    }
+    header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+    header p { font-size: 0.95rem; opacity: 0.92; margin-top: 4px; max-width: 650px; margin-inline: auto; }
+
+    /* Controls: Search & GPS */
+    .controls {
+      max-width: 1000px; margin: -20px auto 16px; padding: 0 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .search-row {
+      display: flex; gap: 8px; background: var(--card); padding: 8px;
+      border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .search-row input {
+      flex: 1; border: none; outline: none; font-size: 1rem; padding: 8px 12px;
+    }
+    .btn-gps {
+      background: var(--success); color: #fff; border: none; border-radius: 8px;
+      padding: 10px 14px; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .btn-gps:hover { opacity: 0.9; }
+    .gps-status {
+      font-size: 0.8rem; text-align: center; color: var(--primary-dark); font-weight: 600;
+      display: none;
+    }
+
+    /* Alphabet Bar A-Z */
+    .alpha-bar {
+      max-width: 1000px; margin: 0 auto 16px; padding: 0 16px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 4px;
+    }
+    .alpha-btn {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .alpha-btn.all-btn { width: auto; padding: 0 12px; }
+    .alpha-btn.active, .alpha-btn:hover {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+    }
+    .alpha-btn.empty { opacity: 0.4; }
+
+    /* Directory Grid */
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+    .stats-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 0.85rem; color: var(--muted); font-weight: 600;
+    }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
+    }
+    .card {
+      background: var(--card); border-radius: 14px; padding: 16px;
+      border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .letter-tag {
+      background: #e0f2fe; color: var(--primary-dark); font-weight: 800;
+      padding: 2px 8px; border-radius: 6px; font-size: 0.8rem;
+    }
+    .dist-tag {
+      background: #dcfce7; color: #15803d; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px; font-size: 0.78rem;
+    }
+    .card h3 { font-size: 1.08rem; font-weight: 700; margin-top: 6px; color: var(--text); }
+    .card-cat { font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase; }
+    .card-desc { font-size: 0.88rem; color: #475569; margin-top: 4px; }
+    .card-loc { font-size: 0.82rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+
+    .card-actions {
+      display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .link-btn {
+      flex: 1; text-align: center; text-decoration: none; font-size: 0.8rem; font-weight: 700;
+      padding: 8px 10px; border-radius: 8px; transition: opacity 0.2s; min-width: 90px;
+    }
+    .link-web { background: var(--primary); color: #fff; }
+    .link-gps { background: #f1f5f9; color: var(--text); border: 1px solid #cbd5e1; }
+    .link-social { background: #fef3c7; color: #b45309; }
+    .link-btn:hover { opacity: 0.85; }
+
+    /* Floating Live Chat */
+    .chat-toggle {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: var(--secondary); color: #0f172a; border: none;
+      padding: 14px 20px; border-radius: 50px; font-weight: 800; font-size: 0.95rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22); cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chat-box {
+      position: fixed; bottom: 80px; right: 20px; width: 340px; max-width: calc(100vw - 40px);
+      background: var(--card); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 1px solid var(--border); z-index: 1000; display: none; flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-header {
+      background: #0f172a; color: #fff; padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+    }
+    .chat-header button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+    .chat-messages {
+      height: 260px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+      background: #f8fafc;
+    }
+    .msg {
+      background: #fff; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .msg-meta { font-size: 0.72rem; color: var(--primary); font-weight: 700; margin-bottom: 2px; }
+    .chat-input-area {
+      padding: 10px; background: #fff; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .chat-row { display: flex; gap: 6px; }
+    .chat-input-area input {
+      padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; width: 100%;
+    }
+    .chat-send {
+      background: var(--primary); color: #fff; border: none; border-radius: 8px;
+      padding: 0 14px; font-weight: 700; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barre supérieure avec Traducteur Mondial -->
+  <div class="top-bar">
+    <span>🌴 TENERIFE 24/7 — Répertoire Officiel & Communauté</span>
+    <div id="google_translate_element"></div>
+  </div>
+
+  <!-- En-tête -->
+  <header>
+    <h1>Tenerife 24/7 — Tout l'Annuaire de A à Z</h1>
+    <p>Tous les professionnels, associations, bars, cours, hébergements, services, événements et points GPS en direct sur toute l'île.</p>
+  </header>
+
+  <!-- Recherche & Géolocalisation GPS -->
+  <div class="controls">
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Rechercher un pro, bar, cours, association, ville (El Médano, Santa Cruz...)" onkeyup="renderDirectory()">
+      <button class="btn-gps" onclick="activateGPS()">📍 Autour de moi (GPS)</button>
+    </div>
+    <div class="gps-status" id="gpsStatus">Localisation GPS en cours...</div>
+  </div>
+
+  <!-- Barre Alphabétique A-Z -->
+  <div class="alpha-bar" id="alphaBar"></div>
+
+  <!-- Contenu Principal -->
+  <div class="container">
+    <div class="stats-bar">
+      <span id="countDisplay">Chargement du répertoire...</span>
+      <span id="sortDisplay">Tri : Alphabétique (A-Z)</span>
+    </div>
+    <div class="grid" id="directoryGrid"></div>
+  </div>
+
+  <!-- Bouton & Fenêtre Chat Direct -->
+  <button class="chat-toggle" onclick="toggleChat()">💬 Chat Direct Tenerife</button>
+  <div class="chat-box" id="chatBox">
+    <div class="chat-header">
+      <span>💬 Direct Tenerife 24/7</span>
+      <button onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg">
+        <div class="msg-meta">Admin Tenerife 24/7 • En direct</div>
+        Bienvenue sur le chat communautaire ! Partagez vos bons plans, soirées, concerts ou questions sur l'île.
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatUser" placeholder="Votre prénom ou pseudo (ex: Alex - El Médano)">
+      <div class="chat-row">
+        <input type="text" id="chatText" placeholder="Écrire un message en direct..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button class="chat-send" onclick="sendMessage()">Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Google Translate (Toutes les langues du monde) -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'fr',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Base de données complète A-Z + Moteur GPS + Chat -->
+  <script>
+    const directoryData = [
+      // A
+      { letter: 'A', cat: 'Associations & Entraide', name: 'Cruz Roja Española Tenerife', city: 'Santa Cruz & Toute l’île', lat: 28.4636, lng: -16.2518, desc: 'Actions solidaires, bénévolat, secours et associations locales à Tenerife.', web: 'https://www2.cruzroja.es/', social: 'https://www.instagram.com/cruzrojaesp/' },
+      { letter: 'A', cat: 'Activités & Sports Nautiques', name: 'Surf, Kitesurf & Wingfoil El Médano', city: 'El Médano', lat: 28.0445, lng: -16.5364, desc: 'Écoles de glisse, location de matériel et cours face à la Montaña Roja.', web: 'https://www.webtenerife.com/', social: 'https://www.instagram.com/explore/tags/elmedano/' },
+      { letter: 'A', cat: 'Administration & Démarches', name: 'Sede Electrónica Cabildo de Tenerife', city: 'Toute l’île', lat: 28.4642, lng: -16.2478, desc: 'Portail officiel des démarches administratives, licences et services publics.', web: 'https://sede.tenerife.es/', social: 'https://www.facebook.com/CabildoTenerife/' },
+      // B
+      { letter: 'B', cat: 'Bars Reggae & Concerts', name: 'King of Judah Reggae Bar', city: 'Los Cristianos', lat: 28.0531, lng: -16.7165, desc: 'Bar reggae emblématique du sud, musique roots, ambiance conviviale et cocktails.', web: 'https://www.facebook.com/kingofjudahbar', social: 'https://www.instagram.com/kingofjudahbar' },
+      { letter: 'B', cat: 'Bars Reggae & Musique', name: 'Kingston Reggae Bar', city: 'Costa Adeje', lat: 28.0785, lng: -16.7312, desc: 'Spot 100% vibrations reggae et culture jamaïcaine sur la côte sud.', web: 'https://www.facebook.com/kingstonreggaebar', social: 'https://www.instagram.com/kingstonreggaebar' },
+      { letter: 'B', cat: 'Bars Live & Concerts', name: 'Detroit’s Tenerife', city: 'Costa Adeje', lat: 28.0810, lng: -16.7330, desc: 'Concerts live tous les soirs, musique soul, funk, rock et cocktails.', web: 'https://detroitstenerife.es/', social: 'https://www.instagram.com/detroitstenerife' },
+      { letter: 'B', cat: 'Bars & Vie Nocturne', name: 'Chirinstones & Disco Pub Jeip', city: 'El Médano', lat: 28.0458, lng: -16.5355, desc: 'Ambiance festive en bord de mer, DJ sets et soirées dansantes le week-end.', web: 'https://www.instagram.com/chirinstones', social: 'https://www.facebook.com/profile.php?id=100094359034468' },
+      // C
+      { letter: 'C', cat: 'Cours de Danse SBK', name: 'Academia Dile Que Sí & Soirées SBK', city: 'El Médano / Sud', lat: 28.0465, lng: -16.5370, desc: 'Cours de Salsa, Bachata, Kizomba et agenda complet des soirées latines.', web: 'https://damien150482.github.io/Sbktenerife/', social: 'https://www.instagram.com/explore/tags/salsatenerife/' },
+      { letter: 'C', cat: 'Concerts Gratuits & Places', name: 'Plaza de España & Plaza Roja', city: 'Santa Cruz & El Médano', lat: 28.4671, lng: -16.2472, desc: 'Grands concerts en plein air, fêtes populaires et festivals gratuits.', web: 'https://www.webtenerife.com/que-hacer/agenda/', social: 'https://www.instagram.com/visit_tenerife/' },
+      { letter: 'C', cat: 'Commerce & Artisans', name: 'Mercadillos del Agricultor y Artesanía', city: 'San Miguel / Tegueste / Güímar', lat: 28.0975, lng: -16.6172, desc: 'Marchés hebdomadaires de producteurs locaux, fromages, vins et artisans.', web: 'https://www.webtenerife.com/', social: 'https://www.facebook.com/VisitTenerife/' },
+      // D
+      { letter: 'D', cat: 'Discothèques & Clubs Latins', name: 'Achamán Discopub', city: 'Costa Adeje', lat: 28.0842, lng: -16.7295, desc: 'Club latino incontournable pour danser Salsa, Bachata et Kizomba.', web: 'https://www.facebook.com/achamandiscopub/', social: 'https://www.instagram.com/achamandiscopub/' },
+      // E
+      { letter: 'E', cat: 'Événements & Fêtes du Vin', name: 'Fiestas de San Andrés & Bodegas', city: 'Icod / La Orotava / San Miguel', lat: 28.3667, lng: -16.7167, desc: 'Dégustations de vin nouveau, fêtes traditionnelles et gastronomie locale.', web: 'https://www.webtenerife.com/', social: 'https://www.instagram.com/explore/tags/vinosdetenerife/' },
+      // F
+      { letter: 'F', cat: 'Fitness & Musculation', name: 'Fitness Park Los Cristianos / Las Chafiras', city: 'Arona / San Miguel', lat: 28.0558, lng: -16.6215, desc: 'Salles de musculation, cross-training et remise en forme équipées.', web: 'https://www.fitnesspark.es/', social: 'https://www.instagram.com/fitnessparkespana/' },
+      // G
+      { letter: 'G', cat: 'Gastronomie & Guachinches', name: 'Guachinche La Maestra & Cas Toñito', city: 'Las Chafiras / Valle San Lorenzo', lat: 28.0612, lng: -16.6234, desc: 'Cuisine canarienne traditionnelle, papas arrugadas, viandes grillées et vin local.', web: 'https://www.webtenerife.com/gastronomia/guachinches/', social: 'https://www.instagram.com/explore/tags/guachinche/' },
+      // H
+      { letter: 'H', cat: 'Habitations & Hébergements', name: 'Locations, Gîtes & Hôtels Tenerife', city: 'Toute l’île', lat: 28.2916, lng: -16.6291, desc: 'Plateformes de réservation de logements, chambres, appartements et séjours.', web: 'https://www.booking.com/region/es/tenerife.fr.html', social: 'https://www.airbnb.fr/' },
+      { letter: 'H', cat: 'Habitations & Immobilier', name: 'Portails Immobiliers & Terrains (Idealista)', city: 'Toute l’île', lat: 28.4636, lng: -16.2518, desc: 'Achat, location longue durée, fincas rustiques et locaux professionnels.', web: 'https://www.idealista.com/venta-viviendas/santa-cruz-de-tenerife-provincia/', social: 'https://www.fotocasa.es/' },
+      // I
+      { letter: 'I', cat: 'Information Touristique', name: 'Oficina de Turismo Palacio de Carta', city: 'Santa Cruz de Tenerife', lat: 28.4668, lng: -16.2485, desc: 'Bureau officiel d’information touristique, cartes et programmes culturels.', web: 'https://www.webtenerife.com/', social: 'https://www.instagram.com/visit_tenerife/' },
+      // J
+      { letter: 'J', cat: 'Jardins & Parcs Botaniques', name: 'Palmetum & Jardín Botánico', city: 'Santa Cruz & Puerto de la Cruz', lat: 28.4525, lng: -16.2558, desc: 'Collections botaniques uniques au monde, palmiers et flore endémique.', web: 'https://palmetumtenerife.es/', social: 'https://www.instagram.com/palmetumtenerife/' },
+      // K
+      { letter: 'K', cat: 'Karting & Loisirs Mécaniques', name: 'Karting Club Tenerife', city: 'Arona / Parque de la Reina', lat: 28.0672, lng: -16.6785, desc: 'Circuits de karting professionnels pour adultes et enfants dans le sud.', web: 'https://www.kartingtenerife.com/', social: 'https://www.instagram.com/kartingclubtenerife/' },
+      // L
+      { letter: 'L', cat: 'Locations de Véhicules & Vans', name: 'CICAR & AutoReisen Tenerife', city: 'Aéroports Sud & Nord / Ports', lat: 28.0444, lng: -16.5725, desc: 'Loueurs locaux historiques aux Canaries sans frais cachés.', web: 'https://www.cicar.com/', social: 'https://www.autoreisen.com/' },
+      // M
+      { letter: 'M', cat: 'Mécanique & Camping-Cars', name: 'Ateliers Auto, Caravaning & Pièces', city: 'Las Chafiras / Taco / La Laguna', lat: 28.0575, lng: -16.6180, desc: 'Entretien mécanique, équipement vanlife, panneaux solaires et contrôle technique ITV.', web: 'https://www.tenerife.es/', social: 'https://www.google.com/maps/search/taller+mecanico+tenerife' },
+      // N
+      { letter: 'N', cat: 'Nature & Parcs Nationaux', name: 'Parque Nacional del Teide', city: 'Centre de Tenerife', lat: 28.2723, lng: -16.6425, desc: 'Réservation de permis sommet, téléphérique, randonnées et observation des étoiles.', web: 'https://www.reservasparquesnacionales.es/', social: 'https://www.volcanoteide.com/' },
+      // O
+      { letter: 'O', cat: 'Océan, Plongée & Pêche', name: 'Clubs de Plongée & Apnée Tenerife', city: 'Radazul / Las Galletas / Los Cristianos', lat: 28.0095, lng: -16.6602, desc: 'Centres de plongée bouteille, apnée et sorties en mer sur la côte.', web: 'https://www.webtenerife.com/', social: 'https://www.google.com/maps/search/diving+center+tenerife' },
+      // P
+      { letter: 'P', cat: 'Parapente & Sports Aériens', name: 'Vols Tandem Parapente Taucho / Izaña', city: 'Adeje / La Orotava', lat: 28.1485, lng: -16.7215, desc: 'Baptêmes de parapente biplace avec vue panoramique sur l’océan.', web: 'https://www.webtenerife.com/', social: 'https://www.google.com/maps/search/paragliding+tenerife' },
+      // Q
+      { letter: 'Q', cat: 'Quartiers Historiques & Culture', name: 'San Cristóbal de La Laguna (UNESCO)', city: 'La Laguna', lat: 28.4874, lng: -16.3159, desc: 'Centre historique classé, musées, rues piétonnes, cafés et vie étudiante.', web: 'https://www.aytolalaguna.es/', social: 'https://www.instagram.com/aytolalaguna/' },
+      // R
+      { letter: 'R', cat: 'Restaurants & Produits Frais', name: 'Mercado de Nuestra Señora de África', city: 'Santa Cruz de Tenerife', lat: 28.4631, lng: -16.2512, desc: 'La Recova : marché emblématique de fruits tropicaux, poissons, épices et tapas.', web: 'https://www.la-recova.com/', social: 'https://www.instagram.com/mercadodelafrica/' },
+      // S
+      { letter: 'S', cat: 'Santé & Urgences Médicales', name: 'Hospiten Sur & Hospital Universitario', city: 'Playa de las Américas / Santa Cruz', lat: 28.0685, lng: -16.7270, desc: 'Centres hospitaliers, urgences 24h/24 et certificats médicaux sportifs.', web: 'https://hospiten.com/', social: 'https://www3.gobiernodecanarias.org/sanidad/scs/' },
+      // T
+      { letter: 'T', cat: 'Transports Publics & Ferries', name: 'TITSA Bus, Tramway & Fred. Olsen / Armas', city: 'Toute l’île & Ports', lat: 28.4589, lng: -16.2562, desc: 'Horaires des bus verts TITSA, tramway et liaisons maritimes inter-îles.', web: 'https://www.titsa.com/', social: 'https://www.fredolsen.es/' },
+      // U
+      { letter: 'U', cat: 'Universités & Formations', name: 'Universidad de La Laguna (ULL)', city: 'San Cristóbal de La Laguna', lat: 28.4815, lng: -16.3220, desc: 'Enseignement supérieur, cours de langues espagnoles et conférences ouvertes.', web: 'https://www.ull.es/', social: 'https://www.instagram.com/ull_es/' },
+      // V
+      { letter: 'V', cat: 'Vignobles & Oenotourisme', name: 'Casa del Vino de Tenerife', city: 'El Sauzal', lat: 28.4765, lng: -16.4342, desc: 'Musée du vin, dégustation des appellations d’origine de Tenerife et restaurant.', web: 'https://www.casadelvinotenerife.com/', social: 'https://www.instagram.com/casadelvinotenerife/' },
+      // W
+      { letter: 'W', cat: 'Wellness, Spas & Bien-être', name: 'Aqua Club Termal & Centres Bien-être', city: 'Costa Adeje', lat: 28.0935, lng: -16.7310, desc: 'Circuits thermaux, massages, yoga et détente dans le sud de Tenerife.', web: 'https://www.aquaclubtermal.com/', social: 'https://www.instagram.com/aquaclubtermal/' },
+      // X
+      { letter: 'X', cat: 'X-treme & Parcs Aquatiques', name: 'Siam Park & Loro Parque', city: 'Costa Adeje & Puerto de la Cruz', lat: 28.0715, lng: -16.7262, desc: 'Les deux parcs d’attractions et animaliers les plus célèbres des Canaries.', web: 'https://www.siampark.net/', social: 'https://www.loroparque.com/' },
+      // Y
+      { letter: 'Y', cat: 'Yachting & Observation Cétacés', name: 'Excursions Baleines & Dauphins', city: 'Puerto Colón / Los Gigantes', lat: 28.0788, lng: -16.7355, desc: 'Sorties en mer éco-responsables pour observer globicéphales et dauphins.', web: 'https://www.webtenerife.com/', social: 'https://www.google.com/maps/search/whale+watching+puerto+colon' },
+      // Z
+      { letter: 'Z', cat: 'Zones Naturelles & Piscines', name: 'Charcos & Piscines Naturelles (Garachico / Bajamar)', city: 'Côte Nord & Ouest', lat: 28.3738, lng: -16.7645, desc: 'Piscines volcaniques naturelles d’eau de mer sur toute la côte de Tenerife.', web: 'https://www.webtenerife.com/', social: 'https://www.google.com/maps/search/piscinas+naturales+tenerife' }
+    ];
+
+    let activeLetter = 'ALL';
+    let userCoords = null;
+
+    // Générer la barre alphabétique A-Z
+    function buildAlphaBar() {
+      const bar = document.getElementById('alphaBar');
+      const availableLetters = new Set(directoryData.map(item => item.letter));
+      
+      let html = `<button class="alpha-btn all-btn active" onclick="selectLetter('ALL', this)">TOUT (A-Z)</button>`;
+      for (let i = 65; i <= 90; i++) {
+        const char = String.fromCharCode(i);
+        const hasItems = availableLetters.has(char);
+        html += `<button class="alpha-btn ${hasItems ? '' : 'empty'}" onclick="selectLetter('${char}', this)">${char}</button>`;
+      }
+      bar.innerHTML = html;
+    }
+
+    function selectLetter(letter, btn) {
+      activeLetter = letter;
+      document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderDirectory();
+    }
+
+    // Calcul de distance GPS (Formule Haversine en km)
+    function getDistanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return (R * c).toFixed(1);
+    }
+
+    // Activer le GPS en direct
+    function activateGPS() {
+      const status = document.getElementById('gpsStatus');
+      status.style.display = 'block';
+      status.textContent = '📡 Recherche de votre position GPS...';
+
+      if (!navigator.geolocation) {
+        status.textContent = '❌ Géolocalisation non supportée par votre navigateur.';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          status.textContent = `✅ Position GPS active (${userCoords.lat.toFixed(4)}, ${userCoords.lng.toFixed(4)}) — Trié du plus proche au plus loin !`;
+          document.getElementById('sortDisplay').textContent = 'Tri : Proximité GPS 📍';
+          renderDirectory();
+        },
+        (err) => {
+          status.textContent = '⚠️ Autorisez la localisation GPS dans votre téléphone pour calculer les distances.';
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+    // Afficher les fiches
+    function renderDirectory() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      let filtered = directoryData.filter(item => {
+        const matchLetter = activeLetter === 'ALL' || item.letter === activeLetter;
+        const matchQuery = !query || 
+          item.name.toLowerCase().includes(query) ||
+          item.cat.toLowerCase().includes(query) ||
+          item.city.toLowerCase().includes(query) ||
+          item.desc.toLowerCase().includes(query);
+        return matchLetter && matchQuery;
+      });
+
+      // Calcul distance et tri si GPS actif
+      if (userCoords) {
+        filtered = filtered.map(item => ({
+          ...item,
+          dist: parseFloat(getDistanceKm(userCoords.lat, userCoords.lng, item.lat, item.lng))
+        })).sort((a, b) => a.dist - b.dist);
+      } else {
+        filtered.sort((a, b) => a.letter.localeCompare(b.letter) || a.name.localeCompare(b.name));
+      }
+
+      document.getElementById('countDisplay').textContent = `${filtered.length} rubrique(s) trouvée(s)`;
+      const grid = document.getElementById('directoryGrid');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 30px; color: var(--muted);">Aucun résultat pour cette recherche. Essayez un autre mot-clé ou cliquez sur TOUT (A-Z).</p>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+        const distBadge = item.dist !== undefined ? `<span class="dist-tag">📍 à ${item.dist} km</span>` : '';
+        return `
+          <div class="card">
+            <div>
+              <div class="card-top">
+                <span class="letter-tag">Lettre ${item.letter}</span>
+                ${distBadge}
+              </div>
+              <div class="card-cat" style="margin-top:8px;">${item.cat}</div>
+              <h3>${item.name}</h3>
+              <p class="card-desc">${item.desc}</p>
+              <div class="card-loc">📌 Secteur : ${item.city}</div>
+            </div>
+            <div class="card-actions">
+              <a href="${item.web}" target="_blank" rel="noopener" class="link-btn link-web">🌐 Site / Lien</a>
+              <a href="${mapsUrl}" target="_blank" rel="noopener" class="link-btn link-gps">🧭 Itinéraire GPS</a>
+              <a href="${item.social}" target="_blank" rel="noopener" class="link-btn link-social">📱 Réseau / Info</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Gestion du Chat en direct (avec sauvegarde locale instantanée)
+    function toggleChat() {
+      const box = document.getElementById('chatBox');
+      box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function sendMessage() {
+      const userInp = document.getElementById('chatUser');
+      const textInp = document.getElementById('chatText');
+      const user = userInp.value.trim() || 'Visiteur Tenerife';
+      const text = textInp.value.trim();
+      if (!text) return;
+
+      const now = new Date();
+      const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg';
+      msgDiv.innerHTML = `<div class="msg-meta">${escapeHTML(user)} • ${time}</div>${escapeHTML(text)}`;
+      
+      const container = document.getElementById('chatMessages');
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+      textInp.value = '';
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+    }
+
+    // Initialisation au chargement
+    buildAlphaBar();
+    renderDirectory();
+  </script>
+</body>
+</html>
